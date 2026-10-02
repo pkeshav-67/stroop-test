@@ -1,5 +1,6 @@
 import random
 import time
+import matplotlib.pyplot as plt
 
 colors = ["BLUE", "YELLOW", "RED", "GREEN"]
 codes = {"BLUE": 34, "YELLOW": 33, "RED": 31, "GREEN": 32}
@@ -38,21 +39,24 @@ for congruent in plan:
         results.append({"congruent": False, "correct": status == "Correct", "RT": x})
 fast = []
 slow = []
-ct = 10
-it = 10
+
 for result in results:
     if result["congruent"]:
-        
-        fast.append(result["RT"])
-        if not result["correct"]:
-            ct -= 1
-    else:
-        slow.append(result["RT"])
-        if not result["correct"]:
-            it -= 1
-if fast:
-    print(f"Average RT for congruent: {sum(fast)/len(fast):.2f} seconds. ({ct} correct out of 10)")
-if slow:
-    print(f"Average RT for incongruent: {sum(slow)/len(slow):.2f} seconds. ({it} correct out of 10)")
-print("Stroop effect:", (sum(slow)/len(slow) - sum(fast)/len(fast)) if fast and slow else "N/A")
+        if result["correct"]:
+            fast.append(result["RT"])
 
+    else:
+        if result["correct"]:
+            slow.append(result["RT"])
+fast_mean = sum(fast)/len(fast) if fast else 0
+slow_mean = sum(slow)/len(slow) if slow else 0
+if fast:
+    print(f"Average RT for congruent: {fast_mean:.2f} seconds. ({len(fast)} correct out of 10)")
+if slow:
+    print(f"Average RT for incongruent: {slow_mean:.2f} seconds. ({len(slow)} correct out of 10)")
+print("Stroop effect:", (slow_mean - fast_mean) if fast and slow else "N/A")
+
+plt.bar(["Congruent", "Incongruent"], [fast_mean, slow_mean], color=["blue", "red"])
+plt.ylabel("Reaction Time (seconds)")
+plt.title("Stroop Effect Test Results")
+plt.savefig("stroop_results.png")
